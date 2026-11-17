@@ -1,0 +1,24 @@
+name: Deploy Bot
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install sshpass
+      run: sudo apt-get install -y sshpass
+
+    - name: Upload bot.py to VPS
+      run: |
+        sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -P ${{ secrets.VPS_PORT }} -o StrictHostKeyChecking=no bot.py ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/root/scam_bot/bot.py
+
+    - name: Restart Bot on VPS
+      run: |
+        sshpass -p "${{ secrets.VPS_PASSWORD }}" ssh -p ${{ secrets.VPS_PORT }} -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "pkill -9 -f bot.py || true; cd /root/scam_bot && nohup python3 bot.py > nohup.out 2>&1 &"
