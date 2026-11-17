@@ -28,5 +28,5 @@ jobs:
         port: ${{ secrets.VPS_PORT }}
         script: |
           cd /root/scam_bot
-          pkill -9 -f bot.py || true
+          pkill -f "python3 bot.py" || true
           nohup python3 bot.py > nohup.out 2>&1 &
