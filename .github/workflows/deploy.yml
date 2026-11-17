@@ -15,18 +15,8 @@ jobs:
     - name: Install sshpass
       run: sudo apt-get install -y sshpass
 
-    - name: Upload bot.py to VPS
-      run: |
-        sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -P ${{ secrets.VPS_PORT }} -o StrictHostKeyChecking=no bot.py ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/root/scam_bot/bot.py
+    - name: Upload bot.py
+      run: sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -P ${{ secrets.VPS_PORT }} -o StrictHostKeyChecking=no bot.py ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/root/scam_bot/bot.py
 
-    - name: Restart Bot on VPS
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.VPS_USER }}
-        password: ${{ secrets.VPS_PASSWORD }}
-        port: ${{ secrets.VPS_PORT }}
-        script: |
-          cd /root/scam_bot
-          pkill -f "python3 bot.py" || true
-          nohup python3 bot.py > nohup.out 2>&1 &
+    - name: Restart Bot
+      run: sshpass -p "${{ secrets.VPS_PASSWORD }}" ssh -p ${{ secrets.VPS_PORT }} -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "pkill -f 'python3 bot.py' || true; cd /root/scam_bot && screen -dmS bot python3 bot.py"
