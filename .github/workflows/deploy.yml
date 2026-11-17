@@ -18,5 +18,5 @@ jobs:
     - name: Upload bot.py
       run: sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -P ${{ secrets.VPS_PORT }} -o StrictHostKeyChecking=no bot.py ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/root/scam_bot/bot.py
 
-    - name: Restart Bot
-      run: sshpass -p "${{ secrets.VPS_PASSWORD }}" ssh -p ${{ secrets.VPS_PORT }} -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "pkill -f 'python3 bot.py' || true; cd /root/scam_bot && screen -dmS bot python3 bot.py"
+    - name: Restart Bot Service
+      run: sshpass -p "${{ secrets.VPS_PASSWORD }}" ssh -p ${{ secrets.VPS_PORT }} -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "systemctl restart scam.service"
